@@ -14,7 +14,7 @@ This project generates random numbers from 0 to 100 using the GPT-4o-mini model,
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/nazmzadeh/Test-Assignment.git
+   git clone https://github.com/nazmzadeh/GPT-Favorite-Numbers.git
    cd GPT-Favorite-Numbers
 2. Run `npm install` to install dependencies.
 
