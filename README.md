@@ -9,6 +9,9 @@ This project generates random numbers from 0 to 100 using the GPT-4o-mini model,
 
 - Node.js
 - npm (Node Package Manager)
+- An .env file with the following content:
+  ```bash
+  OPENAI_API_KEY=your_openai_api_key_here
 
 ### Installation
 
