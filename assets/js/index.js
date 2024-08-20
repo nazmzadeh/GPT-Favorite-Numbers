@@ -7,19 +7,21 @@ const client = new OpenAI({
 });
 async function generateNumbers(count) {
     const numbers = [];
+    const prompt = 'Reply a random valid stringified number from 0 to 100. For example: "58". Do not use code for this.';
     for (let i = 0; i < count; i++) {
         const params = {
             // Prompt asking the model to generate a random number between 0 and 100
-            messages: [{ role: 'user', content: 'Reply a random valid stringified number from 0 to 100. For example: "58". Do not use code for this.' }],
+            messages: [{ role: 'user', content: prompt }],
             model: 'gpt-4o-mini',
-            temperature: 0.9
+            //? Making this generation more random
+            temperature: 0.8
         };
         //Sending a request to the OpenAI API
         const chatCompletion = await client.chat.completions.create(params);
         //Extracting the generated number from the API response, triming any extra whitespace, and converting it from a string to an integer
-        const number = parseInt(chatCompletion.choices[0].message.content?.replace(/"/g, '').trim() ?? 'No content returned', 10);
-        // console.log("Number:", chatCompletion.choices[0].message.content?.trim().replace(/"/g, ''))
-        !isNaN(number) && numbers.push(number);
+        const numberStr = chatCompletion.choices[0].message.content?.replace(/"/g, '').trim() ?? '';
+        const number = parseInt(numberStr, 10);
+        !isNaN(number) && number >= 0 && number <= 100 && numbers.push(number);
     }
     return numbers;
 }
@@ -61,8 +63,8 @@ function plotChart(frequency) {
     console.log(numbersRow);
 }
 async function main() {
-    const numbers = await generateNumbers(20);
-    console.log("Numbers:", numbers);
+    const numbers = await generateNumbers(25);
+    console.log("Generated numbers:", numbers);
     const frequency = calculateFrequency(numbers);
     plotChart(frequency);
 }
