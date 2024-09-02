@@ -6,23 +6,22 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 async function generateNumbers(count) {
-    const numbers = [];
     const prompt = 'Reply a random valid stringified number from 0 to 100. For example: "58". Do not use code for this.';
-    for (let i = 0; i < count; i++) {
-        const params = {
-            // Prompt asking the model to generate a random number between 0 and 100
-            messages: [{ role: 'user', content: prompt }],
-            model: 'gpt-4o-mini',
-            //? Making this generation more random
-            temperature: 0.8
-        };
-        //Sending a request to the OpenAI API
-        const chatCompletion = await client.chat.completions.create(params);
-        //Extracting the generated number from the API response, triming any extra whitespace, and converting it from a string to an integer
-        const numberStr = chatCompletion.choices[0].message.content?.replace(/"/g, '').trim() ?? '';
+    const params = {
+        // Prompt asking the model to generate a random number between 0 and 100
+        messages: [{ role: 'user', content: prompt }],
+        model: 'gpt-4o-mini',
+        //? Making this generation more random
+        temperature: 0.8
+    };
+    const requests = Array.from({ length: count }, () => client.chat.completions.create(params));
+    const responses = await Promise.all(requests);
+    const numbers = responses.map((response) => {
+        //Extracting the generated number from the API response, trimming any extra whitespace, and converting it from a string to an integer
+        const numberStr = response.choices[0]?.message.content?.replace(/"/g, '').trim() ?? '';
         const number = parseInt(numberStr, 10);
-        !isNaN(number) && number >= 0 && number <= 100 && numbers.push(number);
-    }
+        return !isNaN(number) && number >= 0 && number <= 100 && number;
+    }).filter((number) => number !== null);
     return numbers;
 }
 function calculateFrequency(numbers) {
